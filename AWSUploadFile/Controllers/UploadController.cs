@@ -19,12 +19,14 @@ namespace AWSUploadFile.Controllers
 
         [HttpPost]
         
-        public void UploadFile(uploadFormObject uploadFormObj)
+        public ActionResult UploadFile(uploadFormObject uploadFormObj)
         {
             var result = 0;
             if (!ModelState.IsValid)
             {
-                       
+                ViewBag.Message = "Please select file to upload and enter valid email address.";
+
+                
             }
             else
             {
@@ -47,8 +49,19 @@ namespace AWSUploadFile.Controllers
                     }
                 }
 
+                if (result!=1)
+                {
+                    ViewBag.Message = ViewBag.Message+System.Environment.NewLine+
+                        "Error occured while uploading and sending email notification.";
+                }
+                else
+                {
+                    ViewBag.Message = "File has been upload to AWS successfully";
+                }
                 
             }
+            return View("Upload");
+                //("NameOfView", Model);
 
         }
     }
