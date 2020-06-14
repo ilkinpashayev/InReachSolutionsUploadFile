@@ -40,6 +40,9 @@ namespace AWSUploadFile.Controllers
                     var _UploadFileResult = _amazonS3.UploadFile(_uploadFileObject);
                     if (_UploadFileResult._Result==1)
                     {
+                        SendEmail _SendEmail = new SendEmail();
+                        _SendEmail.Send(_UploadFileResult.PreSignedURL, uploadFormObj.file.FileName);
+                            
                         result = 1;
                     }
                 }
