@@ -70,9 +70,5 @@ F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\obj\Debug\AWSUploadFile.csproj.
 F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\obj\Debug\AWSUploadFile.dll
 F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\obj\Debug\AWSUploadFile.pdb
 F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\obj\Debug\AWSUploadFile.csprojAssemblyReference.cache
-F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.Core.dll
-F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.S3.dll
-F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.Core.pdb
-F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.Core.xml
-F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.S3.pdb
-F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.S3.xml
+F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.dll
+F:\projects\c#\mvcs3\AWSUploadFile\AWSUploadFile\bin\AWSSDK.pdb

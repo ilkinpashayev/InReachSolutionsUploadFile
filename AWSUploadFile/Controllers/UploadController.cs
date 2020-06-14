@@ -21,29 +21,32 @@ namespace AWSUploadFile.Controllers
         
         public void UploadFile(uploadFormObject uploadFormObj)
         {
+            var result = 0;
             if (!ModelState.IsValid)
             {
                        
             }
             else
             {
+                ServerMapPath = Server.MapPath("~/Content/images");
                 var _amazonS3 = new AmazonS3();
                 var _amazonClient = _amazonS3.CreateClient();
-                ServerMapPath = Server.MapPath("~/Content/images");
+                if (_amazonClient._Result == 1)
+                {
+                    UploadFileObject _uploadFileObject = new UploadFileObject();
+                    _uploadFileObject.ServerMapPath = ServerMapPath;
+                    _uploadFileObject.file = uploadFormObj.file;
+                    _uploadFileObject.AmazonClient = _amazonClient._AmazonS3Client;
+                    var _UploadFileResult = _amazonS3.UploadFile(_uploadFileObject);
+                    if (_UploadFileResult._Result==1)
+                    {
+                        result = 1;
+                    }
+                }
 
-                UploadFileObject _uploadFileObject = new UploadFileObject();
-                _uploadFileObject.ServerMapPath = ServerMapPath;
-                _uploadFileObject.file = uploadFormObj.file;
-                _uploadFileObject.AmazonClient = _amazonClient._AmazonS3Client;
+                
+            }
 
-                var _UploadFileResult = _amazonS3.UploadFile(_uploadFileObject);
-
-                    
-
-
-
-            }    
-            
         }
     }
 }
