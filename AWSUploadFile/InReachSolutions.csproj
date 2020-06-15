@@ -106,17 +106,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Domain\AmazonS3ClientResponse.cs" />
+    <Compile Include="Domain\AmazonServiceClientResponse.cs" />
     <Compile Include="Controllers\UploadController.cs" />
-    <Compile Include="Domain\UploadFileObject.cs" />
+    <Compile Include="Domain\StatusCodes.cs" />
+    <Compile Include="Domain\UploadFileModel.cs" />
     <Compile Include="Domain\UploadFileResult.cs" />
-    <Compile Include="Domain\uploadFormObject.cs" />
+    <Compile Include="Domain\UploadRequest.cs" />
+    <Compile Include="Exceptions\AmazonClientBucketException.cs" />
+    <Compile Include="Exceptions\AmazonServiceClientException.cs" />
+    <Compile Include="Exceptions\FileSizeException.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helper\AmazonS3.cs" />
-    <Compile Include="Helper\SendEmail.cs" />
+    <Compile Include="Services\AmazonService.cs" />
+    <Compile Include="Exceptions\UploadFileValidateException.cs" />
+    <Compile Include="Services\SendEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\UploadRequestValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

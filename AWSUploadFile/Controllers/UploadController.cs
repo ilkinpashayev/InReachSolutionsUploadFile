@@ -1,68 +1,85 @@
-﻿using AWSUploadFile.Domain;
-using AWSUploadFile.Helper;
+﻿using InReachSolutions.Domain;
+using InReachSolutions.Exceptions;
+using InReachSolutions.Helper;
+using InReachSolutions.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace AWSUploadFile.Controllers
+namespace InReachSolutions.Controllers
 {
     public class UploadController : Controller
     {
-        private string ServerMapPath = "";
-        // GET: Upload
+        private string ServerMapPath { get; set; }
+        private AmazonService amazonService = new AmazonService();
+        private UploadRequestValidator validate = new UploadRequestValidator();
+        public UploadController()
+        {
+            
+        }
+        [HttpGet]
         public ActionResult Upload()
         {
             return View();
         }
 
         [HttpPost]
-        
-        public ActionResult UploadFile(uploadFormObject uploadFormObj)
-        {
-            var result = 0;
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Message = "Please select file to upload and enter valid email address.";
 
+        public ActionResult UploadFile(UploadRequest uploadFormRequest)
+        {
+            ServerMapPath = Server.MapPath("~/Content/images");
+            try
+            {
+                validate.Validate(ModelState,uploadFormRequest);
+                var amazonClient = amazonService.CreateClient();
+                var rr = new UploadFileModel(uploadFormRequest.file, amazonClient.AmazonClient, ServerMapPath);
+                var _UploadFileResult = amazonService.UploadFile(rr);
+            }
+            catch(UploadFileValidateException ex)
+            {
+                ViewBag.Message = ex.Message;
+            }
+            catch (AmazonServiceClientException ex)
+            {
+                ViewBag.Message = ex.Message;
+            }
+
+           
+
+            return View("Upload");
+            /*            
+            
+
+            //if (amazonClient.StausCode == StatusCodes.AWSConnectionSuccess)
+           // {
+                var uploadFileModel = new UploadFileModel(uploadFormRequest.file, amazonClient.AmazonClient, ServerMapPath);
                 
+                var _UploadFileResult = amazonService.UploadFile(_uploadFileObject);
+                if (_UploadFileResult._Result == 1)
+                {
+                    SendEmail _SendEmail = new SendEmail();
+                    _SendEmail.Send(_UploadFileResult.PreSignedURL, uploadFormObj.file.FileName, uploadFormObj.Email);
+
+                    result = 1;
+                }
+           // }
+
+            if (result != 1)
+            {
+                ViewBag.Message = ViewBag.Message + System.Environment.NewLine +
+                    "Error occured while uploading and sending email notification.";
             }
             else
             {
-                ServerMapPath = Server.MapPath("~/Content/images");
-                var _amazonS3 = new AmazonS3();
-                var _amazonClient = _amazonS3.CreateClient();
-                if (_amazonClient._Result == 1)
-                {
-                    UploadFileObject _uploadFileObject = new UploadFileObject();
-                    _uploadFileObject.ServerMapPath = ServerMapPath;
-                    _uploadFileObject.file = uploadFormObj.file;
-                    _uploadFileObject.AmazonClient = _amazonClient._AmazonS3Client;
-                    var _UploadFileResult = _amazonS3.UploadFile(_uploadFileObject);
-                    if (_UploadFileResult._Result==1)
-                    {
-                        SendEmail _SendEmail = new SendEmail();
-                        _SendEmail.Send(_UploadFileResult.PreSignedURL, uploadFormObj.file.FileName,uploadFormObj.Email);
-                            
-                        result = 1;
-                    }
-                }
-
-                if (result!=1)
-                {
-                    ViewBag.Message = ViewBag.Message+System.Environment.NewLine+
-                        "Error occured while uploading and sending email notification.";
-                }
-                else
-                {
-                    ViewBag.Message = "File has been upload to AWS successfully";
-                }
-                
+                ViewBag.Message = "File has been upload to AWS successfully";
             }
-            return View("Upload");
-                //("NameOfView", Model);
 
+
+            return View("Upload");
+            //("NameOfView", Model);
+            */
         }
     }
 }

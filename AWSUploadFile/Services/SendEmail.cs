@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 
-namespace AWSUploadFile.Helper
+namespace InReachSolutions.Helper
 {
     public class SendEmail
     {
@@ -14,7 +14,7 @@ namespace AWSUploadFile.Helper
         {
 
             var fromAddress = new MailAddress(ConfigurationManager.AppSettings["EmailFrom"], ConfigurationManager.AppSettings["EmailFromName"]);
-            var toAddress = new MailAddress("pashayev.ilkin@gmail.com", "");
+            var toAddress = new MailAddress(toemail, "");
             string fromPassword = ConfigurationManager.AppSettings["EmailPassword"];
             
             const string subject = "AWS S3 uploaded file";
