@@ -10,12 +10,13 @@ namespace AWSUploadFile.Helper
 {
     public class SendEmail
     {
-        public void Send(string urlfile, string keyName)
+        public void Send(string urlfile, string keyName,string toemail)
         {
 
             var fromAddress = new MailAddress(ConfigurationManager.AppSettings["EmailFrom"], ConfigurationManager.AppSettings["EmailFromName"]);
             var toAddress = new MailAddress("pashayev.ilkin@gmail.com", "");
-            const string fromPassword = "ilk14789.";
+            string fromPassword = ConfigurationManager.AppSettings["EmailPassword"];
+            
             const string subject = "AWS S3 uploaded file";
             string body = "PreSignedURL <a href='" + urlfile + "'>" + keyName + "</a>";
 

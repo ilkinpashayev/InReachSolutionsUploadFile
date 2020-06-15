@@ -43,7 +43,7 @@ namespace AWSUploadFile.Controllers
                     if (_UploadFileResult._Result==1)
                     {
                         SendEmail _SendEmail = new SendEmail();
-                        _SendEmail.Send(_UploadFileResult.PreSignedURL, uploadFormObj.file.FileName);
+                        _SendEmail.Send(_UploadFileResult.PreSignedURL, uploadFormObj.file.FileName,uploadFormObj.Email);
                             
                         result = 1;
                     }
