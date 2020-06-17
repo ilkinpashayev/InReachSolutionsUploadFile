@@ -26,7 +26,6 @@ namespace InReachSolutions.Controllers
         }
 
         [HttpPost]
-
         public ActionResult UploadFile(UploadRequest uploadFormRequest)
         {
             ServerMapPath = Server.MapPath("~/Content/images");
@@ -34,8 +33,10 @@ namespace InReachSolutions.Controllers
             {
                 validate.Validate(ModelState,uploadFormRequest);
                 var amazonClient = amazonService.CreateClient();
-                var rr = new UploadFileModel(uploadFormRequest.file, amazonClient.AmazonClient, ServerMapPath);
-                var _UploadFileResult = amazonService.UploadFile(rr);
+                var uploadFileModel = new UploadFileModel(uploadFormRequest.file, amazonClient.AmazonClient, ServerMapPath);
+                var uploadResponse = amazonService.UploadFile(uploadFileModel);
+                var sendEmail = new SendEmail(uploadResponse.PreSignedURL, uploadFormRequest.file.FileName);
+                sendEmail.Send(uploadFormRequest.Email);
             }
             catch(UploadFileValidateException ex)
             {
@@ -45,8 +46,18 @@ namespace InReachSolutions.Controllers
             {
                 ViewBag.Message = ex.Message;
             }
-
-           
+            catch (SaveFileException ex)
+            {
+                ViewBag.Message = ex.Message;
+            }
+            catch (UploadFileException ex)
+            {
+                ViewBag.Message = ex.Message;
+            }
+            catch (SendEmailException ex)
+            {
+                ViewBag.Message = ex.Message;
+            }
 
             return View("Upload");
             /*            

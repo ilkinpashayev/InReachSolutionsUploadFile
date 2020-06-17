@@ -46,7 +46,7 @@ namespace InReachSolutions.Helper
             }
             catch (Exception ex)
             {
-                throw new AmazonClientBucketException("Couldn't connect to Amazon S3 Client.");
+                throw new AmazonClientBucketException("Couldn't connect to Amazon S3 Client. "+ex.Message);
                 
             }
 
@@ -69,60 +69,78 @@ namespace InReachSolutions.Helper
             }
             catch(Exception ex)
             {
-                throw new AmazonServiceClientException("Couldn't connect to Amazon S3 Client.");
+                throw new AmazonServiceClientException("Couldn't connect to Amazon S3 Client. "+ ex.Message);
             }
             return null;
         }
         
+        private TransferUtilityUploadRequest SaveFile(UploadFileModel uploadFileModel)
+        {
+            try
+            {
+                var keyName = uploadFileModel.File.FileName;
+                var filePath = Path.Combine(uploadFileModel.ServerMapPath, keyName);
+                uploadFileModel.File.SaveAs(filePath);
+                var fileTransferUtilityRequest = new TransferUtilityUploadRequest
+                {
+                    BucketName = bucketName,
+                    FilePath = filePath,
+                    StorageClass = S3StorageClass.StandardInfrequentAccess,
+                    PartSize = 4096, // 6 MB.  
+                    Key = keyName,
+                    CannedACL = S3CannedACL.PublicRead
+                };
+                return fileTransferUtilityRequest;
+            }
+            catch(Exception ex)
+            {
+                throw new SaveFileException("An error occured while saving file or setting file settings.");
+            }
+            return null;
+        }
+        public string GetPreSignedUrl(UploadFileModel uploadFileModel)
+        {
+            try
+            {
+                var expiryUrlRequest = new GetPreSignedUrlRequest
+                {
+                    BucketName = bucketName,
+                    Key = uploadFileModel.File.FileName,
+                    Expires = DateTime.Now.AddMinutes(5)
+                };
+                var fileurl = uploadFileModel.AmazonClient.GetPreSignedURL(expiryUrlRequest);
+                return fileurl;
+            }
+            catch(Exception ex)
+            {
+                throw new GetPreSignedUrlException("An error occured while getting presigned url for uploaded file.");
+            }
+            return null;
+        }
+
         public UploadFileResult UploadFile(UploadFileModel uploadFileModel)
         {
-            UploadFileResult _UploadFileResult = new UploadFileResult();
             string urlfile = "";
             string filePath;
             try
             {
                 var fileTransferUtility = new TransferUtility(uploadFileModel.AmazonClient);
-                var keyName = uploadFileModel.File.FileName;
-                filePath = Path.Combine(uploadFileModel.ServerMapPath, keyName);
-                uploadFileModel.File.SaveAs(filePath);
-                
-                var fileTransferUtilityRequest = new TransferUtilityUploadRequest
-                    {
-                        BucketName = bucketName,
-                        FilePath = filePath,
-                        StorageClass = S3StorageClass.StandardInfrequentAccess,
-                        PartSize = 4096, // 6 MB.  
-                        Key = keyName,
-                        CannedACL = S3CannedACL.PublicRead
-                    };
-            
-                 fileTransferUtility.Upload(fileTransferUtilityRequest);
-                 var expiryUrlRequest = new GetPreSignedUrlRequest
-                    {
-                        BucketName = bucketName,
-                        Key = keyName,
-                        Expires = DateTime.Now.AddMinutes(5)
-                    };
-                    urlfile = uploadFileModel.AmazonClient.GetPreSignedURL(expiryUrlRequest);
-                    //_UploadFileResult._Result = 1;
-                    //_UploadFileResult.PreSignedURL = urlfile;
-                    fileTransferUtility.Dispose();
+                var fileTransferUtilityRequest = SaveFile(uploadFileModel);
+                fileTransferUtility.Upload(fileTransferUtilityRequest);
+                var preSignedURL = GetPreSignedUrl(uploadFileModel);
+                var uploadFileResult = new UploadFileResult(StatusCodes.AWSUploadFileSuccess,preSignedURL);
+                fileTransferUtility.Dispose();
+                return uploadFileResult;
             }
-            catch (AmazonS3Exception amazonS3Exception)
+            catch(GetPreSignedUrlException ex)
             {
-                if (amazonS3Exception.ErrorCode != null &&
-                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId")
-                    ||
-                    amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                {
-                    //_UploadFileResult._Result = -2;
-                }
-                else
-                {
-                  //  _UploadFileResult._Result = -3;
-                }
+
             }
-            return _UploadFileResult;
+            catch (Exception ex)
+            {
+                throw new UploadFileException("An error occured while uploading file");
+            }
+            return null ;
         }
         
 }

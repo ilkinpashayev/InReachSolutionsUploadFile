@@ -115,6 +115,10 @@
     <Compile Include="Exceptions\AmazonClientBucketException.cs" />
     <Compile Include="Exceptions\AmazonServiceClientException.cs" />
     <Compile Include="Exceptions\FileSizeException.cs" />
+    <Compile Include="Exceptions\GetPreSignedUrlException.cs" />
+    <Compile Include="Exceptions\SaveFileException.cs" />
+    <Compile Include="Exceptions\SendEmailException.cs" />
+    <Compile Include="Exceptions\UploadFileException.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

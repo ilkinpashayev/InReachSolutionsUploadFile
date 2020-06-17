@@ -15,5 +15,10 @@ namespace InReachSolutions.Domain
             StatusCode = StatusCodes.Empty;
             PreSignedURL = "";
         }
+        public UploadFileResult(StatusCodes StatusCode, string PreSignedURL)
+        {
+            this.StatusCode = StatusCode;
+            this.PreSignedURL = PreSignedURL;
+        }
     }
 }
