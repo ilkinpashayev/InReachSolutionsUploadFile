@@ -1,4 +1,5 @@
-﻿using InReachSolutions.Exceptions;
+﻿using AWSUploadFile.Services;
+using InReachSolutions.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -10,32 +11,39 @@ using System.Web;
 
 namespace InReachSolutions.Helper
 {
-    public class SendEmail
+    public class EmailService
     {
         private SmtpClient smtp { get; set; }
         private MailAddress fromAddress { get; set; }
         private string fromPassword { get; set; }
         private string subject { get; set; }
         private string body { get; set; }
-        public SendEmail(string preSignedURL, string keyName)
+
+        public EmailService()
+        {
+
+        }
+
+        public void PrepareEmail(string preSignedURL, string keyName)
         {
             this.subject = "AWS uploaded file";
             this.body = $"PreSignedURL <a href='{preSignedURL}'>{keyName}</a>";
-            this.fromAddress = new MailAddress(ConfigurationManager.AppSettings["EmailFrom"], ConfigurationManager.AppSettings["EmailFromName"]);
-            this.fromPassword = ConfigurationManager.AppSettings["EmailPassword"];
-            string configValue = ConfigurationManager.AppSettings["EmailNetwork"];
-            SmtpDeliveryMethod networkValue = (SmtpDeliveryMethod)Enum.Parse(typeof(SmtpDeliveryMethod), configValue);
-
+            this.fromAddress = new MailAddress(ConfigurationService.Instance.EmailFrom,
+                                                ConfigurationService.Instance.EmailFromName);
+            this.fromPassword = ConfigurationService.Instance.EmailPassword;
+            string emailNetworkValue = ConfigurationService.Instance.EmailNetwork;
+            SmtpDeliveryMethod networkValue = (SmtpDeliveryMethod)Enum.Parse(typeof(SmtpDeliveryMethod), emailNetworkValue);
             this.smtp = new SmtpClient
             {
-                Host = ConfigurationManager.AppSettings["EmailHost"],
-                Port = Int32.Parse(ConfigurationManager.AppSettings["EmailPort"]),
-                EnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EmailEnableSsl"]),
-                DeliveryMethod = SmtpDeliveryMethod.Network,//networkValue,
-                UseDefaultCredentials = Convert.ToBoolean(ConfigurationManager.AppSettings["EmailUseDefaultCredentials"]),
+                Host = ConfigurationService.Instance.EmailHost,
+                Port = Int32.Parse(ConfigurationService.Instance.EmailPort),
+                EnableSsl = Convert.ToBoolean(ConfigurationService.Instance.EmailEnableSsl),
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = Convert.ToBoolean(ConfigurationService.Instance.EmailUseDefaultCredentials),
                 Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
             };
         }
+        
         public void Send(string to)
         {
             var toAddress = new MailAddress(to, "");

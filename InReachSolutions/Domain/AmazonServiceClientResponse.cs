@@ -7,6 +7,7 @@ namespace InReachSolutions.Domain
     {
         public StatusCodes StatusCode { get; set; }
         public AmazonS3Client AmazonClient { get; set; }
+
         public AmazonServiceClientResponse()
         {
             this.StatusCode = StatusCodes.Empty;

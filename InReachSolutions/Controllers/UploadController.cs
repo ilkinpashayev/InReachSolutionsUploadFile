@@ -1,4 +1,6 @@
-﻿using InReachSolutions.Domain;
+﻿using Amazon.DeviceFarm.Model;
+using AWSUploadFile.Services;
+using InReachSolutions.Domain;
 using InReachSolutions.Exceptions;
 using InReachSolutions.Helper;
 using InReachSolutions.Services;
@@ -14,83 +16,40 @@ namespace InReachSolutions.Controllers
     {
         private string ServerMapPath { get; set; }
         private AmazonService amazonService = new AmazonService();
-        private UploadRequestValidator validate = new UploadRequestValidator();
+        private UploadRequestValidator validator = new UploadRequestValidator();
+        private EmailService emailService = new EmailService();
+        
+
         public UploadController()
         {
-            
+            var aw = ConfigurationService.Instance.AWSAccessKey;
         }
         [HttpGet]
         public ActionResult Upload()
         {
+
             return View();
         }
-
         [HttpPost]
+
         public ActionResult UploadFile(UploadRequest uploadFormRequest)
         {
             ServerMapPath = Server.MapPath("~/Content/images");
             try
             {
-                validate.Validate(ModelState,uploadFormRequest);
+                validator.Validate(ModelState,uploadFormRequest);
                 var amazonClient = amazonService.CreateClient();
                 var uploadFileModel = new UploadFileModel(uploadFormRequest.file, amazonClient.AmazonClient, ServerMapPath);
                 var uploadResponse = amazonService.UploadFile(uploadFileModel);
-                var sendEmail = new SendEmail(uploadResponse.PreSignedURL, uploadFormRequest.file.FileName);
-                sendEmail.Send(uploadFormRequest.Email);
+                emailService.PrepareEmail(uploadResponse.PreSignedURL, uploadFormRequest.file.FileName);
+                emailService.Send(uploadFormRequest.Email);
+                ViewBag.Message = "FIle had been uploaded successfully.";
             }
-            catch(UploadFileValidateException ex)
+            catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
             }
-            catch (AmazonServiceClientException ex)
-            {
-                ViewBag.Message = ex.Message;
-            }
-            catch (SaveFileException ex)
-            {
-                ViewBag.Message = ex.Message;
-            }
-            catch (UploadFileException ex)
-            {
-                ViewBag.Message = ex.Message;
-            }
-            catch (SendEmailException ex)
-            {
-                ViewBag.Message = ex.Message;
-            }
-
             return View("Upload");
-            /*            
-            
-
-            //if (amazonClient.StausCode == StatusCodes.AWSConnectionSuccess)
-           // {
-                var uploadFileModel = new UploadFileModel(uploadFormRequest.file, amazonClient.AmazonClient, ServerMapPath);
-                
-                var _UploadFileResult = amazonService.UploadFile(_uploadFileObject);
-                if (_UploadFileResult._Result == 1)
-                {
-                    SendEmail _SendEmail = new SendEmail();
-                    _SendEmail.Send(_UploadFileResult.PreSignedURL, uploadFormObj.file.FileName, uploadFormObj.Email);
-
-                    result = 1;
-                }
-           // }
-
-            if (result != 1)
-            {
-                ViewBag.Message = ViewBag.Message + System.Environment.NewLine +
-                    "Error occured while uploading and sending email notification.";
-            }
-            else
-            {
-                ViewBag.Message = "File has been upload to AWS successfully";
-            }
-
-
-            return View("Upload");
-            //("NameOfView", Model);
-            */
         }
     }
 }

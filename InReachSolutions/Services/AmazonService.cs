@@ -11,6 +11,7 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using AWSUploadFile.Services;
 using InReachSolutions.Controllers;
 using InReachSolutions.Domain;
 using InReachSolutions.Exceptions;
@@ -19,10 +20,9 @@ namespace InReachSolutions.Helper
 {
     public class AmazonService
     {
-        private static readonly string bucketName = ConfigurationManager.AppSettings["BucketName"];
-        private static readonly string accesskey = ConfigurationManager.AppSettings["AWSAccessKey"];
-        private static readonly string secretkey = ConfigurationManager.AppSettings["AWSSecretKey"];
-        //private static RegionEndpoint bucketRegion =    RegionEndpoint.GetBySystemName(ConfigurationManager.AppSettings["RegionEndpoint"]);
+        private static readonly string bucketName = ConfigurationService.Instance.BucketName;
+        private static readonly string accesskey  = ConfigurationService.Instance.AWSAccessKey;
+        private static readonly string secretkey  = ConfigurationService.Instance.AWSSecretKey;
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;
 
         public AmazonService()
@@ -49,7 +49,6 @@ namespace InReachSolutions.Helper
                 throw new AmazonClientBucketException("Couldn't connect to Amazon S3 Client. "+ex.Message);
                 
             }
-
         }
         public AmazonServiceClientResponse CreateClient()
         {
@@ -60,7 +59,6 @@ namespace InReachSolutions.Helper
                 amazonServiceClientResponse.StatusCode = StatusCodes.AWSConnectionSuccess;
                 amazonServiceClientResponse.AmazonClient = amazonS3Client;
                 var listBuckets = amazonS3Client.ListBuckets();
-                //CheckBucket(amazonS3Client);
                 return amazonServiceClientResponse;
             }
             catch(AmazonClientBucketException ex)
@@ -86,7 +84,7 @@ namespace InReachSolutions.Helper
                     BucketName = bucketName,
                     FilePath = filePath,
                     StorageClass = S3StorageClass.StandardInfrequentAccess,
-                    PartSize = 4096, // 6 MB.  
+                    PartSize = 4096, 
                     Key = keyName,
                     CannedACL = S3CannedACL.PublicRead
                 };
