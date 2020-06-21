@@ -11,11 +11,5 @@ namespace InReachSolutions.Domain
         OK = 1,
         AWSConnectionSuccess = 2,
         AWSUploadFileSuccess = 3,
-        SendEmailSuccess = 4,
-        AWSConnectionError = -2,
-        AWSUploadFileError = -3,
-        SendEmailError = -4
-
-
     }
 }

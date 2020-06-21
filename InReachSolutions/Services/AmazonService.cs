@@ -7,7 +7,6 @@ using System.Runtime.Serialization;
 using System.Security.Policy;
 using System.Web;
 using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
@@ -23,33 +22,12 @@ namespace InReachSolutions.Helper
         private static readonly string bucketName = ConfigurationService.Instance.BucketName;
         private static readonly string accesskey  = ConfigurationService.Instance.AWSAccessKey;
         private static readonly string secretkey  = ConfigurationService.Instance.AWSSecretKey;
-        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;
+        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.GetBySystemName(ConfigurationService.Instance.RegionEndpoint); //RegionEndpoint.;
 
         public AmazonService()
         {
         }
 
-        private void CheckBucket(AmazonS3Client amazonS3Client)
-        {
-            try
-            {
-                var listBuckets = amazonS3Client.ListBuckets();
-
-                foreach (S3Bucket bucket in listBuckets.Buckets)
-                {
-                    if (bucket.BucketName == bucketName)
-                    {
-                        return;
-                    }
-                }
-                throw new AmazonClientBucketException($"Couldn't find bucket: {bucketName}");
-            }
-            catch (Exception ex)
-            {
-                throw new AmazonClientBucketException("Couldn't connect to Amazon S3 Client. "+ex.Message);
-                
-            }
-        }
         public AmazonServiceClientResponse CreateClient()
         {
             try
@@ -96,6 +74,7 @@ namespace InReachSolutions.Helper
             }
             return null;
         }
+
         public string GetPreSignedUrl(UploadFileModel uploadFileModel)
         {
             try
@@ -115,6 +94,7 @@ namespace InReachSolutions.Helper
             }
             return null;
         }
+
 
         public UploadFileResult UploadFile(UploadFileModel uploadFileModel)
         {
@@ -139,7 +119,6 @@ namespace InReachSolutions.Helper
                 throw new UploadFileException("An error occured while uploading file");
             }
             return null ;
-        }
-        
-}
+        }   
+    }
 }

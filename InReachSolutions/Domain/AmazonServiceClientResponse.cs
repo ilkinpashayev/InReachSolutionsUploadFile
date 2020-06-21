@@ -1,5 +1,4 @@
-﻿using Amazon.Glacier;
-using Amazon.S3;
+﻿using Amazon.S3;
 
 namespace InReachSolutions.Domain
 {

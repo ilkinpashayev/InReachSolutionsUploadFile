@@ -1,5 +1,4 @@
-﻿using Amazon.DeviceFarm.Model;
-using AWSUploadFile.Services;
+﻿using AWSUploadFile.Services;
 using InReachSolutions.Domain;
 using InReachSolutions.Exceptions;
 using InReachSolutions.Helper;
@@ -18,7 +17,6 @@ namespace InReachSolutions.Controllers
         private AmazonService amazonService = new AmazonService();
         private UploadRequestValidator validator = new UploadRequestValidator();
         private EmailService emailService = new EmailService();
-        
 
         public UploadController()
         {
@@ -30,11 +28,11 @@ namespace InReachSolutions.Controllers
 
             return View();
         }
+       
         [HttpPost]
-
         public ActionResult UploadFile(UploadRequest uploadFormRequest)
         {
-            ServerMapPath = Server.MapPath("~/Content/images");
+            ServerMapPath = Server.MapPath("~/Content/files");
             try
             {
                 validator.Validate(ModelState,uploadFormRequest);

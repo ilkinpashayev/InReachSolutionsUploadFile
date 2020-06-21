@@ -61,7 +61,7 @@ namespace AWSUploadFile.Services
         {
             get
             {
-                return ConfigurationManager.AppSettings["BucketName"];
+                return ConfigurationManager.AppSettings["RegionEndpoint"];
             }
         }
 
